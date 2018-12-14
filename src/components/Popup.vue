@@ -1,5 +1,5 @@
 <template>
-    <v-dialog max-width="600px">
+    <v-dialog max-width="600px" v-model="dialog">
         <v-btn slot="activator" flat class="success">Add new project</v-btn>
         <v-card>
             <v-card-title>
@@ -15,7 +15,7 @@
                         <v-date-picker v-model="project.due"></v-date-picker>
                     </v-menu>
                     <v-spacer></v-spacer>
-                    <v-btn flat class="success mx-0 mt-3" :rules="inputRules" @click="submit">Add project</v-btn>
+                    <v-btn flat :loading="loading" class="success mx-0 mt-3" :rules="inputRules" @click="submit">Add project</v-btn>
                 </v-form>
             </v-card-text>
         </v-card>
@@ -35,7 +35,9 @@ export default {
             },
             inputRules: [
                 v => v.length >= 3 || 'Minimun length is 3 characters'
-            ]
+            ],
+            loading: false,
+            dialog: false,
         }
     },
     methods: {
@@ -44,10 +46,11 @@ export default {
                 const project = this.project;
                 project.person = 'Davi Giroux'
                 project.status = 'ongoing'
+                this.loading = true
 
-                db.collection('projects').add(project).then(res => {
-                    console.log(res)
-                    console.log('added')
+                db.collection('projects').add(project).then(() => {
+                    this.loading = false
+                    this.dialog = false
                 })
             }
         }
